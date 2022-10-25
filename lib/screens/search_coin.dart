@@ -140,7 +140,8 @@ class SearchCoinState extends State<SearchCoin> {
                           } : //false: delete coin info for that portfolio id
                           {showDialog<String>(
                             context: context,
-                            builder: (BuildContext context) =>AlertDialog(title: const Text('Remove Coin',style: kTitleTextStyle,textAlign: TextAlign.center,),
+                            builder: (BuildContext context) => AlertDialog(
+                              title: Text('Remove Coin',style: kTitleTextStyle.copyWith(fontSize: 24),textAlign: TextAlign.center,),
                               content: const Text('Are you sure you want to remove this coin? Any transactions associated with this coin will also be removed',
                                 style: kCardTextStyle,),
                               actions: <Widget>[

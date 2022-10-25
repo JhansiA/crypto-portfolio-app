@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto_portfolio_app/components/add_portfolio.dart';
 import 'package:crypto_portfolio_app/screens/add_transaction.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:crypto_portfolio_app/components/rounded_button.dart';
 
 final _firestore = FirebaseFirestore.instance;
 // String? portfolioName;
@@ -135,7 +136,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     trailing: IconButton(
                       icon: const Icon(Icons.more_vert, color: kTextColor,size: 25,),
                       onPressed: () {
-                        //  TODO:
                         showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -255,6 +255,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Widget _showDialog(){
+    var newTitle;
     return Dialog(
       alignment: Alignment.bottomCenter,
       shape: RoundedRectangleBorder(
@@ -272,7 +273,40 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               Row(
                 children: [
                   const Icon(Icons.edit_note, color: kPrimaryColor,size: 20),
-                  TextButton(onPressed: (){}, child: Text('Rename',style: kInputTitleTextStyle,))
+                  TextButton(onPressed: (){
+                    showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) => AlertDialog(
+                        actionsAlignment: MainAxisAlignment.center,
+                        insetPadding: EdgeInsets.symmetric(vertical: 200),
+                        title: Text('Edit Portfolio',style: kTitleTextStyle.copyWith(fontSize: 24),textAlign: TextAlign.center,),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Portfolio Name',style: kInputTitleTextStyle,),
+                            TextField(
+                              textAlign: TextAlign.center,
+                              cursorColor: kPrimaryColor,
+                              controller: TextEditingController()..text = portfolioName!,
+                              onChanged: (text) {
+                                newTitle = text;
+                              },
+                              decoration: kTextFieldDecoration,
+                            ),
+                          ],
+                        ),
+                        actions: <Widget>[
+                          RoundedButton(
+                            onPressed: () {
+                                Database.updatePortfolio(portfolioID!, newTitle);
+                                Navigator.popAndPushNamed(context, PortfolioScreen.id);
+                            },
+                            title: 'Update Portfolio',
+                          ),
+                        ],
+                      ),
+                    );
+                  }, child: Text('Rename',style: kInputTitleTextStyle,))
                 ],
               ),
               Divider(color: kTextColor2,thickness: 0.5,),
@@ -281,7 +315,32 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 child: Row(
                   children: [
                     const Icon(Icons.delete, color: kPrimaryColor,size: 20),
-                    TextButton(onPressed: (){}, child: Text('Delete Portfolio',style: kInputTitleTextStyle,))
+                    TextButton(onPressed: (){
+                      showDialog<String>(
+                        context: context,
+                        builder: (BuildContext context) => AlertDialog(
+                          // title: Text('Remove Coin',style: kTitleTextStyle.copyWith(fontSize: 24),textAlign: TextAlign.center,),
+                          content: Text('Are you sure you want to delete "$portfolioName" ?',
+                            style: kCardTextStyle,),
+                          actions: <Widget>[
+                            RoundedButton(
+                              onPressed: () {
+                                Navigator.pop(context, 'Cancel');
+                              },
+                              title: 'Cancel',
+                            ),
+                            RoundedButton(
+                              onPressed: () {
+                                  Database.deletePortfolio(portfolioID!);
+                                  Navigator.popAndPushNamed(context, PortfolioScreen.id);
+                              },
+                              title: 'Ok',
+                            ),
+                          ],
+                        ),
+                      );
+                      },
+                        child: Text('Delete this Portfolio',style: kInputTitleTextStyle,))
                   ],
                 ),
               ),

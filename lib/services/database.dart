@@ -68,4 +68,13 @@ class Database{
         _firestore.collection('CryptoCoins').doc(doc_id).delete();
       }}
   }
+
+  static void deletePortfolio (String portfolioID) {
+        _firestore.collection('PortfolioDetails').doc(portfolioID).delete();
+  }
+
+  static void updatePortfolio (String portfolioID, String title) {
+    _firestore.collection('PortfolioDetails').doc(portfolioID)
+        .update({"portfolioName":title});
+  }
 }
