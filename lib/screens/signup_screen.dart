@@ -42,13 +42,13 @@ class _SignupScreenState extends State<SignupScreen> {
         color: kPrimaryColor,
         inAsyncCall: showSpinner,
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: ListView(
             children: [Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 48.0,
                 ),
                 const Text('Create your account',style: kTitleTextStyle),
@@ -73,7 +73,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                   ),
-                SizedBox(width: 8.0,),
+                const SizedBox(width: 8.0,),
                 Flexible(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +93,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15.0,
                 ),
                 const Text('Email address',style: kInputTitleTextStyle,),
@@ -108,7 +108,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 Text('Your email address will be used as your username to login to the crypto portfolio',
                   style: kInputTitleTextStyle.copyWith(fontWeight: FontWeight.normal,fontSize: 12),),
-                SizedBox(
+                const SizedBox(
                   height: 15.0,
                 ),
                 const Text('Password',style: kInputTitleTextStyle,),
@@ -121,7 +121,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                   decoration: kTextFieldDecoration,
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15.0,
                 ),
                 Container(

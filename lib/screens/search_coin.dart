@@ -26,7 +26,7 @@ class Debouncer {
       timer!.cancel();
     }
     timer = Timer(
-      Duration(milliseconds: Duration.millisecondsPerSecond),
+      const Duration(milliseconds: Duration.millisecondsPerSecond),
       action,
     );
   }
@@ -64,8 +64,8 @@ class SearchCoinState extends State<SearchCoin> {
     final portfolioData = routeData.entries.elementAt(0).key;
 
     getCoinData(portfolioData);
-    Map<String,bool> isChecked = {for (var item in coinList) '$item' : true};
-    print(isChecked);
+    Map<String,bool> isChecked = {for (var item in coinList) item : true};
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kBackgroundColor,
@@ -89,7 +89,8 @@ class SearchCoinState extends State<SearchCoin> {
             child: TextField(
               cursorColor: kPrimaryColor,
               textInputAction: TextInputAction.search,
-              decoration: kTextFieldDecoration.copyWith(prefixIcon: const InkWell(child: Icon(Icons.search,color: kPrimaryColor,),focusColor: kPrimaryColor,),
+              decoration: kTextFieldDecoration.copyWith(prefixIcon:
+              const InkWell(focusColor: kPrimaryColor,child: Icon(Icons.search,color: kPrimaryColor,),),
                 hintText: 'Search for a coin',),
               onChanged: (value) {
                 _debouncer.run(() {
@@ -108,7 +109,7 @@ class SearchCoinState extends State<SearchCoin> {
           userCoinLists.isNotEmpty? Expanded(
             child: ListView.builder(
               shrinkWrap: true,
-              physics: ClampingScrollPhysics(),
+              physics: const ClampingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 0),
               itemCount: userCoinLists.length,
               itemBuilder: (BuildContext context, int index) {
@@ -120,20 +121,20 @@ class SearchCoinState extends State<SearchCoin> {
                       leading: Image.network(userCoinLists[index].coinIcon,height: 40,),
                       title: Text(
                         userCoinLists[index].coinName,
-                        style: TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16),
                       ),
                       subtitle: Text(
                         userCoinLists[index].coinCode,
-                        style: TextStyle(fontSize: 12),
+                        style: const TextStyle(fontSize: 12),
                       ),
                       trailing: StarButton(
                         isStarred: isChecked.containsKey(userCoinLists[index].coinID)? true:
                         false,
                         iconSize: 40,
                         iconColor: kPrimaryColor,
-                        valueChanged: (_isStarred) {
+                        valueChanged: (onChanged) {
                           // true: add coin info with portfolio id
-                          _isStarred? {
+                          onChanged? {
                           setState(() {
                             Database.setCryptoList(portfolioData, userCoinLists[index]);
                           })
@@ -168,13 +169,13 @@ class SearchCoinState extends State<SearchCoin> {
                         }
                       ),
                     ),
-                    Divider(color: kTextColor2,thickness: 1.0,),
+                    const Divider(color: kTextColor2,thickness: 1.0,),
                   ],
                 );
               },
             ),
           ):
-          SizedBox(height: 20,),
+          const SizedBox(height: 20,),
         ],
       ),
     );

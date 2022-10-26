@@ -1,28 +1,22 @@
 import 'package:crypto_portfolio_app/screens/search_coin.dart';
+import 'package:crypto_portfolio_app/screens/signin_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto_portfolio_app/constants.dart';
 import 'package:crypto_portfolio_app/screens/create_portfolio.dart';
 import 'package:crypto_portfolio_app/services/database.dart';
 import 'package:crypto_portfolio_app/services/cryptoAPI.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto_portfolio_app/components/add_portfolio.dart';
 import 'package:crypto_portfolio_app/screens/add_transaction.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:crypto_portfolio_app/components/rounded_button.dart';
 
-final _firestore = FirebaseFirestore.instance;
-// String? portfolioName;
-// String? portfolioID;
-// Map<String,String> portfolioData = {};
-
 class PortfolioScreen extends StatefulWidget {
   static const String id = 'portfolio_screen';
   const PortfolioScreen({Key? key}) : super(key: key);
 
-
   @override
   State<PortfolioScreen> createState() => _PortfolioScreenState();
-
 }
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
@@ -32,6 +26,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Map<String,dynamic> coinDetails = {};
   Map<String,String> price = {};
   // bool showSpinner = false;
+  final _text = TextEditingController();
+  final _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -39,7 +35,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     loggedInUser = Database().getCurrentUser();
     getProfileDetails();
   }
-
+  @override
+  void dispose() {
+    _text.dispose();
+    super.dispose();
+  }
   void getProfileDetails() async{
     // setState(() {
     //   showSpinner = true;
@@ -55,7 +55,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Future<void> getPortfolio(id) async {
     //To get portfolio details
     var result = await Database.getPortfolioInfo(id);
-    if(result.length != 0) {
+    if(result.isNotEmpty) {
       setState(() {
         portfolioData = result;
         portfolioName = result.entries
@@ -94,22 +94,30 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
     return SafeArea(
       child: Scaffold(
-        body: portfolioData.isEmpty? CreatePortfolio() :
-              TopFixedWidget(),
+        body: portfolioData.isEmpty? CreatePortfolio() : loadPortfolio(),
       ),
     );
   }
 
-  Widget TopFixedWidget(){
+  Widget loadPortfolio(){
     return Padding(
       padding: const EdgeInsets.only(left: 5,right: 5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ListTile(
+            leading: IconButton(
+              icon: const Icon(Icons.logout_outlined, color: kPrimaryColor,size: 30,),
+              onPressed: () {
+                _auth.signOut();
+                // Navigator.pushNamed(context, SigninScreen.id);
+                Navigator.pushNamedAndRemoveUntil(context, SigninScreen.id, (route) => false);
+              },
+            ),
             title: Text(
               portfolioName.toString(),
               style: kTitleTextStyle,
+              textAlign: TextAlign.center,
             ),
             trailing: IconButton(
               icon: const Icon(Icons.add_circle_outline, color: kPrimaryColor,size: 30,),
@@ -170,47 +178,22 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     );
   }
   Widget _displayCryptoTable(){
+    List<String> columnList = ['COIN','PRICE','HOLDINGS',''];
     return DataTable(
       //TODO: Sorting
       // sortColumnIndex: 1,
       // sortAscending: true,
       columnSpacing: 40,
       dataRowHeight: 60,
-        columns: <DataColumn>[
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            'COIN',
-            style: kTitleTextStyle.copyWith(fontSize: 16),
+        columns: columnList.map((String column) => DataColumn(
+          label: Expanded(
+            child: Text(
+              column,
+              style: kTitleTextStyle.copyWith(fontSize: 16),
+            ),
           ),
         ),
-      ),
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            'PRICE',
-            style: kTitleTextStyle.copyWith(fontSize: 16),
-          ),
-        ),
-        numeric: true,
-      ),
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            'HOLDINGS',
-            style: kTitleTextStyle.copyWith(fontSize: 16),
-          ),
-        ),
-      ),
-      DataColumn(
-        label: Expanded(
-          child: Text(
-            '',
-            style: kTitleTextStyle.copyWith(fontSize: 16),
-          ),
-        ),
-      ),
-    ],
+        ).toList(),
         rows: coinDetails.entries.map((element) => _createRows(element.value,price[element.key]??'0')).toList()
     );
   }
@@ -222,14 +205,17 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           children: [
             Image.network(coindetails['coinIcon'],height: 30,),
             Text(
-              coindetails['CoinCode'],
-              style: TextStyle(fontSize: 12),
+              coindetails['coinCode'],
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         )),
-        DataCell(Text(
-          '\$$coinprice',
-          style: TextStyle(fontSize: 16),
+        DataCell(Container(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            '\$$coinprice',
+            style: const TextStyle(fontSize: 16),
+          ),
         )),
         DataCell(Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -237,25 +223,24 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           children: [
             Text(
               '\$$coinprice',
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
             Text(
-              coindetails['CoinCode'],
-              style: TextStyle(fontSize: 14),
+              coindetails['coinCode'],
+              style: const TextStyle(fontSize: 14),
             ),
           ],
         )),
         DataCell(IconButton(
           icon: const Icon(Icons.add, color: kPrimaryColor,size: 20,),
           onPressed: () {
-            Navigator.pushNamed(context, AddTransaction.id, arguments: coindetails['CoinCode']);
+            Navigator.pushNamed(context, AddTransaction.id, arguments: [coindetails['coinCode'],portfolioID]);
           },
         ))
       ]);
   }
 
   Widget _showDialog(){
-    var newTitle;
     return Dialog(
       alignment: Alignment.bottomCenter,
       shape: RoundedRectangleBorder(
@@ -274,42 +259,20 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 children: [
                   const Icon(Icons.edit_note, color: kPrimaryColor,size: 20),
                   TextButton(onPressed: (){
-                    showDialog<String>(
-                      context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                        actionsAlignment: MainAxisAlignment.center,
-                        insetPadding: EdgeInsets.symmetric(vertical: 200),
-                        title: Text('Edit Portfolio',style: kTitleTextStyle.copyWith(fontSize: 24),textAlign: TextAlign.center,),
-                        content: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Portfolio Name',style: kInputTitleTextStyle,),
-                            TextField(
-                              textAlign: TextAlign.center,
-                              cursorColor: kPrimaryColor,
-                              controller: TextEditingController()..text = portfolioName!,
-                              onChanged: (text) {
-                                newTitle = text;
-                              },
-                              decoration: kTextFieldDecoration,
-                            ),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          RoundedButton(
-                            onPressed: () {
-                                Database.updatePortfolio(portfolioID!, newTitle);
-                                Navigator.popAndPushNamed(context, PortfolioScreen.id);
-                            },
-                            title: 'Update Portfolio',
+                    showModalBottomSheet(
+                        context: context,
+                        isDismissible: false,
+                        isScrollControlled: true,
+                        builder: (context) => SafeArea(
+                          child: Container(
+                            child: renameProfile(),
                           ),
-                        ],
-                      ),
+                        )
                     );
-                  }, child: Text('Rename',style: kInputTitleTextStyle,))
+                  }, child: const Text('Rename',style: kInputTitleTextStyle,))
                 ],
               ),
-              Divider(color: kTextColor2,thickness: 0.5,),
+              const Divider(color: kTextColor2,thickness: 0.5,),
               SizedBox(
                 width: 320.0,
                 child: Row(
@@ -340,13 +303,59 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         ),
                       );
                       },
-                        child: Text('Delete this Portfolio',style: kInputTitleTextStyle,))
+                        child: const Text('Delete this Portfolio',style: kInputTitleTextStyle,))
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+  Widget renameProfile(){
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ListTile(
+              leading: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: kPrimaryColor,size: 30,),
+                  onPressed: () {
+                      Navigator.pop(context);
+                    },
+              ),
+              title:Text('Edit Portfolio Name',style: kTitleTextStyle.copyWith(fontSize: 24),)),
+          const SizedBox(height: 10,),
+          const Text('Portfolio Name',style: kInputTitleTextStyle,),
+          TextField(
+            textAlign: TextAlign.center,
+            cursorColor: kPrimaryColor,
+            controller: _text,
+            onChanged: (text) {
+              var newTitle = text;
+              // print(newTitle);
+            },
+            decoration: kTextFieldDecoration,
+          ),
+          Container(
+            alignment: Alignment.center,
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: RoundedButton(
+                onPressed: () {
+                  // print(_text.text);
+                  Database.updatePortfolio(portfolioID!, _text.text);
+                  _text.clear();
+                  Navigator.popAndPushNamed(context, PortfolioScreen.id);
+                },
+                title: 'Update Portfolio',
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

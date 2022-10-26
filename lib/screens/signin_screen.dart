@@ -65,6 +65,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   SizedBox(
                     height: 15.0,
                   ),
+                  //TODO: add logic
                   Text('Forgot your password?',style: kInputTitleTextStyle.copyWith(color: kPrimaryColor,decoration: TextDecoration.underline),
                   ),
 
