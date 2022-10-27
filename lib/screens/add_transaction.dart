@@ -79,7 +79,8 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: kPrimaryColor,size: 35,),
           onPressed: () {
-            Navigator.popAndPushNamed(context, PortfolioScreen.id);
+            // Navigator.popAndPushNamed(context, PortfolioScreen.id);
+            Navigator.pop(context);
           },
         ),
         title: const Text(

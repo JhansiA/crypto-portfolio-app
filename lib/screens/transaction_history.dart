@@ -164,7 +164,12 @@ class TransactionsStream extends StatelessWidget {
           transactionsList.add(transactionRow);
         }
         return Expanded(
-          child: ListView(
+          child: snapshot.data?.docs.length == 0?
+          Container(
+            alignment: Alignment.center,
+            child: Text('No transactions are available!',style: const TextStyle(fontSize: 25, color: kTextColor)),
+          ):
+          ListView(
             // reverse: true,
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
             children: transactionsList,
