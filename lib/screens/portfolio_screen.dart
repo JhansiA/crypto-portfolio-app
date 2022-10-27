@@ -176,8 +176,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       'Total Profit/Loss',
                       style: kCardTextStyle,
                     ),
-                    trailing: (portfolioValue[1]??0) >= 0? Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),style: kCardTextStyle.copyWith(color: Colors.green)):
-                    Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),style: kCardTextStyle.copyWith(color: Colors.red))
+                    trailing: (portfolioValue[1]??0) >= 0? Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),
+                        style: TextStyle(color: Colors.green, fontSize: 20,fontWeight: FontWeight.bold,
+                    )):
+                    Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),
+                      style: TextStyle(color: Colors.red, fontSize: 20,fontWeight: FontWeight.bold,)
+                    ),
                   ),
                 ],
               ),
