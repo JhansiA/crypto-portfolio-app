@@ -9,8 +9,6 @@ import 'package:crypto_portfolio_app/services/cryptoAPI.dart';
 
 class SearchCoin extends StatefulWidget {
   static const String id = 'search_coin_screen';
-  SearchCoin({this.portfolioData});
-  final portfolioData;
 
   @override
   SearchCoinState createState() => SearchCoinState();
@@ -99,7 +97,9 @@ class SearchCoinState extends State<SearchCoin> {
                         .where(
                           (u) => (u.coinName.toLowerCase().contains(
                             value.toLowerCase(),
-                      )),
+                      ) || u.coinCode.toLowerCase().contains(
+                            value.toLowerCase(),
+                          )),
                     ).toList(): userCoinLists = [];
                   });
                 });
@@ -157,7 +157,7 @@ class SearchCoinState extends State<SearchCoin> {
                                   onPressed: () {
                                     Navigator.pop(context, 'OK');
                                     setState(() {
-                                      Database.deleteCryptoCoin(portfolioData, userCoinLists[index].coinID);
+                                      Database.deleteCryptoCoin(portfolioData, userCoinLists[index].coinID, userCoinLists[index].coinCode);
                                     });
                                     },
                                   title: 'Ok',

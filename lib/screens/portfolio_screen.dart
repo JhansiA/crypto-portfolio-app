@@ -1,5 +1,6 @@
 import 'package:crypto_portfolio_app/screens/search_coin.dart';
 import 'package:crypto_portfolio_app/screens/signin_screen.dart';
+import 'package:crypto_portfolio_app/screens/transaction_history.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto_portfolio_app/constants.dart';
@@ -10,6 +11,7 @@ import 'package:crypto_portfolio_app/components/add_portfolio.dart';
 import 'package:crypto_portfolio_app/screens/add_transaction.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:crypto_portfolio_app/components/rounded_button.dart';
+import 'package:intl/intl.dart';
 
 class PortfolioScreen extends StatefulWidget {
   static const String id = 'portfolio_screen';
@@ -24,7 +26,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   String? portfolioID;
   Map<String,String> portfolioData = {};
   Map<String,dynamic> coinDetails = {};
-  Map<String,String> price = {};
+  Map<String,double> price = {};
+  double? totalBalance ;
+  double? totalProfitLoss ;
   // bool showSpinner = false;
   final _text = TextEditingController();
   final _auth = FirebaseAuth.instance;
@@ -91,7 +95,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return SafeArea(
       child: Scaffold(
         body: portfolioData.isEmpty? CreatePortfolio() : loadPortfolio(),
@@ -152,13 +155,14 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       }
                     ),
                   ),
-                  Text('200000.99',style: kCardTextStyle.copyWith(fontSize: 32,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                  Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(totalBalance??0),
+                    style: kCardTextStyle.copyWith(fontSize: 32,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
                   ListTile(
-                    title: Text(
+                    title: const Text(
                       'Total Profit/Loss',
                       style: kCardTextStyle,
                     ),
-                    trailing: Text('1555.99',style: kCardTextStyle),
+                    trailing: Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(totalProfitLoss??0),style: kCardTextStyle),
                   ),
                 ],
               ),
@@ -168,9 +172,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             child: SingleChildScrollView(
               child: coinDetails.isNotEmpty?
               _displayCryptoTable():
-                AddPortfolio(onPressed: () async {
-                  Navigator.pushNamed(context, SearchCoin.id, arguments: portfolioData);
-                })
+                Padding(
+                  padding: const EdgeInsets.only(top: defaultPadding),
+                  child: AddPortfolio(onPressed: () async {
+                    Navigator.pushNamed(context, SearchCoin.id, arguments: portfolioData);
+                  }),
+                )
             ),
           ),
         ],
@@ -180,6 +187,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Widget _displayCryptoTable(){
     List<String> columnList = ['COIN','PRICE','HOLDINGS',''];
     return DataTable(
+      showCheckboxColumn: false,
       //TODO: Sorting
       // sortColumnIndex: 1,
       // sortAscending: true,
@@ -194,12 +202,19 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           ),
         ),
         ).toList(),
-        rows: coinDetails.entries.map((element) => _createRows(element.value,price[element.key]??'0')).toList()
+        rows: coinDetails.entries.map((element) => _createRows(element.value,price[element.key]?? 0)).toList()
     );
   }
-  DataRow _createRows(Map<String,dynamic> coindetails, String coinprice ) {
+  DataRow _createRows(Map<String,dynamic> coindetails, double coinprice ) {
+    double holdings = (coinprice * coindetails['totalQuantity']);
+    totalBalance = (totalBalance??0) + holdings ;
+    print(totalBalance); //TODO: check with sri how to update
     return
-      DataRow(cells: [
+      DataRow(
+          onSelectChanged: (newValue){
+            Navigator.pushNamed(context, CoinTransactions.id, arguments: [portfolioID,coindetails,holdings]);
+          },
+          cells: [
         DataCell(Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -213,7 +228,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         DataCell(Container(
           alignment: Alignment.centerLeft,
           child: Text(
-            '\$$coinprice',
+            NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 4).format(coinprice),
             style: const TextStyle(fontSize: 16),
           ),
         )),
@@ -222,12 +237,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              '\$$coinprice',
+              NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 3).format(holdings),
               style: const TextStyle(fontSize: 16),
             ),
             Text(
-              coindetails['coinCode'],
-              style: const TextStyle(fontSize: 14),
+                '${coindetails['totalQuantity']} ${coindetails['coinCode']}',
+              style: const TextStyle(fontSize: 12),
             ),
           ],
         )),
@@ -335,8 +350,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             cursorColor: kPrimaryColor,
             controller: _text,
             onChanged: (text) {
-              var newTitle = text;
-              // print(newTitle);
             },
             decoration: kTextFieldDecoration,
           ),

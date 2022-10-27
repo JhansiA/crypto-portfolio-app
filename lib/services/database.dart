@@ -83,8 +83,8 @@ class Database{
         String docId = queryDocumentSnapshot.id;
         Map<String,dynamic> data = queryDocumentSnapshot.data();
 
-        double totalQuantity = (type == 'buy') ? data['totalQuantity']+quantity :data['totalQuantity']-quantity;
-        double totalCost = (type == 'buy') ? data['totalCost']+cost :data['totalCost']-cost;
+        double totalQuantity = (type == 'Buy') ? data['totalQuantity']+quantity :data['totalQuantity']-quantity;
+        double totalCost = (type == 'Buy') ? data['totalCost']+cost :data['totalCost']-cost;
         double averagePrice = double.parse((totalCost / totalQuantity).toStringAsFixed(3));
 
         _firestore.collection('CryptoCoins').doc(docId)
@@ -93,13 +93,20 @@ class Database{
     }
   }
 
-  static Future<void> deleteCryptoCoin (String portfolioID, var coin) async {
+  static Future<void> deleteCryptoCoin (String portfolioID, var coin, var coinCode) async {
     var eventsQuery = await _firestore.collection('CryptoCoins')
         .where('portfolioID',isEqualTo: portfolioID).where('coinID',isEqualTo: coin).get();
     if(eventsQuery.size != 0){
       for (var queryDocumentSnapshot in eventsQuery.docs) {
         var docId = queryDocumentSnapshot.id;
         _firestore.collection('CryptoCoins').doc(docId).delete();
+      }}
+    var eventsQuery1 = await _firestore.collection('CoinTransactions')
+        .where('portfolioID',isEqualTo: portfolioID).where('coin',isEqualTo: coinCode).get();
+    if(eventsQuery1.size != 0){
+      for (var queryDocumentSnapshot in eventsQuery1.docs) {
+        var docId = queryDocumentSnapshot.id;
+        _firestore.collection('CoinTransactions').doc(docId).delete();
       }}
   }
 

@@ -1,11 +1,13 @@
+import 'package:crypto_portfolio_app/screens/portfolio_screen.dart';
 import 'package:crypto_portfolio_app/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto_portfolio_app/constants.dart';
 import 'package:intl/intl.dart';
 import 'package:crypto_portfolio_app/components/rounded_button.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AddTransaction extends StatefulWidget {
-  static const String id = 'transaction_screen';
+  static const String id = 'add_transactions';
 
   AddTransaction({Key? key}) : super(key: key);
   // AddTransaction({this.coinCode});
@@ -28,7 +30,7 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
   double? coinPrice;
 
   DateTime? date;
-  String? finalprice ;
+  String? finalPrice ;
 
 
   @override
@@ -77,12 +79,12 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: kPrimaryColor,size: 35,),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.popAndPushNamed(context, PortfolioScreen.id);
           },
         ),
         title: const Text(
           'Add Transaction',
-          style: TextStyle(fontSize: 25),textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 25,color: kTextColor),textAlign: TextAlign.center,
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -164,8 +166,9 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
             const SizedBox(
               height: 20.0,
             ),
-            const Text('Price Per Coin',style: kInputTitleTextStyle),
-            TextField(
+            textLabel != 'Transfer' ?
+              const Text('Price Per Coin',style: kInputTitleTextStyle): Container(),
+            textLabel != 'Transfer' ?TextField(
               readOnly: true,
               textAlign: TextAlign.start,
               controller: finalValue,
@@ -179,7 +182,7 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
                   child: Text('USD',style: kCardTextStyle,),
                 ),
               ),
-            ),
+            ): Container(),
             const SizedBox(
               height: 20.0,
             ),
@@ -234,15 +237,25 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
                       //TODO: logic to save
                       double coinPrice = (finalValue.text.isNotEmpty && finalValue.text !='.') ? double.parse(finalValue.text): 0;
                       String? type = coinType();
-                      print(quantity);
-                      print(value);
-                      print(dateInput.text );
+
                       Database.addTransactions(portfolioId, coinCode, coinPrice, quantity!, value!, type!, dateInput.text);
                       Database.updateCryptoCoin(portfolioId, coinCode, coinPrice, quantity!, value!, type);
+
                       totalEditingController.clear();
                       quantityEditingController.clear();
                       finalValue.clear();
                       dateInput.clear();
+                      Navigator.popAndPushNamed(context, PortfolioScreen.id);
+                      Fluttertoast.showToast(
+                          msg: "Transaction submitted successfully!",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.SNACKBAR,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: kPrimaryColor,
+                          textColor: kBackgroundColor,
+                          fontSize: 16.0
+                      );
+                      // Navigator.popAndPushNamed(context, PortfolioScreen.id);
                     }),
               ],
             ),
@@ -260,28 +273,28 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
     textQuantity = quantityEditingController.text;
 
     if ((textValue != '' && textQuantity != '') && (textQuantity != '0' && textQuantity != '.') && (textValue != '0' && textValue != '.') ){
-      finalprice = (double.parse(textValue) / double.parse(textQuantity)).toStringAsFixed(3);
+      finalPrice = (double.parse(textValue) / double.parse(textQuantity)).toStringAsFixed(3);
       finalValue.value = finalValue.value.copyWith(
-        text: finalprice.toString(),
+        text: finalPrice.toString(),
       );
     }
     else{
-      finalprice = '0';
+      finalPrice = '0';
       finalValue.value = finalValue.value.copyWith(
-        text: finalprice.toString(),
+        text: finalPrice.toString(),
       );
     }
-    return finalprice;
+    return finalPrice;
   }
   String? coinType()
   {
     String? type ;
     if(_tabController.index==0){
-      type = 'buy';
+      type = 'Buy';
     }else if(_tabController.index==1){
-      type = 'sell';
+      type = 'Sell';
     }else if(_tabController.index==3){
-      type = 'transfer';
+      type = 'Transfer';
     }
     return type ;
   }

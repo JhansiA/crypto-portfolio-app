@@ -28,8 +28,8 @@ class CryptoApi {
     return parsed.map<CoinData>((json) => CoinData.fromJson(json)).toList();
   }
 
-  Future<Map<String,String>> getCoinData(selectedCurrency) async{
-    Map<String,String> cryptoPrices = {};
+  Future<Map<String,double>> getCoinData(selectedCurrency) async{
+    Map<String,double> cryptoPrices = {};
     if(selectedCurrency.length != 0){
     String coins = selectedCurrency.join(",");
      // late String price;
@@ -38,7 +38,8 @@ class CryptoApi {
       if(response.statusCode==200){
         var decodedData = jsonDecode(response.body);
         for (var coin in selectedCurrency) {
-          cryptoPrices[coin] = decodedData[coin]['usd'].toStringAsFixed(3);
+          cryptoPrices[coin] = decodedData[coin]['usd'].toDouble();
+          // .toStringAsFixed(3);
           // cryptoPrices[crypto] = price.toStringAsFixed(0);
         }
       }

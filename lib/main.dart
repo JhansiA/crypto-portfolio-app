@@ -1,3 +1,4 @@
+import 'package:crypto_portfolio_app/screens/transaction_history.dart';
 import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/signin_screen.dart';
@@ -32,6 +33,7 @@ class CryptoPortfolio extends StatelessWidget {
         PortfolioScreen.id: (context) => PortfolioScreen(),
         SearchCoin.id: (context) => SearchCoin(),
         AddTransaction.id: (context) => AddTransaction(),
+        CoinTransactions.id: (context) => CoinTransactions(),
       },
     );
   }
