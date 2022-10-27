@@ -13,7 +13,7 @@ const kTitleTextStyle = TextStyle(
 );
 
 const kCardTextStyle = TextStyle(
-  color: kTextColor, fontSize: 16,fontWeight: FontWeight.normal,
+  color: kTextColor, fontSize: 18,fontWeight: FontWeight.normal,
 );
 
 const kInputTitleTextStyle = TextStyle(

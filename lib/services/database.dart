@@ -58,7 +58,8 @@ class Database{
         'coinID'  : coin.coinID,
         'totalQuantity' : 0,
         'totalCost' : 0,
-        'averagePrice' : 0,
+        'totalProceedings' : 0,
+        'averageNetCost' : 0,
       });
   }
 
@@ -76,6 +77,10 @@ class Database{
   }
 
   static Future<void> updateCryptoCoin (String portfolioId, String coin,double coinPrice,double quantity,double cost,String type) async {
+    double totalQuantity;
+    double? totalCost;
+    double? totalProceedings;
+    double averagePrice;
     var eventsQuery = await _firestore.collection('CryptoCoins')
         .where('portfolioID',isEqualTo: portfolioId).where('coinCode',isEqualTo: coin).get();
     if(eventsQuery.size != 0){
@@ -83,12 +88,17 @@ class Database{
         String docId = queryDocumentSnapshot.id;
         Map<String,dynamic> data = queryDocumentSnapshot.data();
 
-        double totalQuantity = (type == 'Buy') ? data['totalQuantity']+quantity :data['totalQuantity']-quantity;
-        double totalCost = (type == 'Buy') ? data['totalCost']+cost :data['totalCost']-cost;
-        double averagePrice = double.parse((totalCost / totalQuantity).toStringAsFixed(3));
+        totalQuantity = (type == 'Buy') ? data['totalQuantity']+quantity :data['totalQuantity']-quantity;
+        (type == 'Buy') ? totalCost = data['totalCost']+cost : totalProceedings = data['totalProceedings'] + cost;
+        (type == 'Buy') ? averagePrice = ((totalCost??0) - (data['totalProceedings']??0))/ totalQuantity:
+        averagePrice = ((data['totalCost']??0) - (totalProceedings??0))/ totalQuantity;
+
+        (type == 'Buy') ?
+        _firestore.collection('CryptoCoins').doc(docId)
+            .update({"totalQuantity":totalQuantity,"totalCost":totalCost,"averageNetCost":averagePrice}):
 
         _firestore.collection('CryptoCoins').doc(docId)
-            .update({"totalQuantity":totalQuantity,"totalCost":totalCost,"averagePrice":averagePrice});
+            .update({"totalQuantity":totalQuantity,"totalProceedings":totalProceedings,"averageNetCost":averagePrice});
       }
     }
   }
@@ -110,8 +120,22 @@ class Database{
       }}
   }
 
-  static void deletePortfolio (String portfolioID) {
+  static Future<void> deletePortfolio (String portfolioID) async {
         _firestore.collection('PortfolioDetails').doc(portfolioID).delete();
+        var eventsQuery = await _firestore.collection('CryptoCoins')
+            .where('portfolioID',isEqualTo: portfolioID).get();
+        if(eventsQuery.size != 0){
+          for (var queryDocumentSnapshot in eventsQuery.docs) {
+            var docId = queryDocumentSnapshot.id;
+            _firestore.collection('CryptoCoins').doc(docId).delete();
+          }}
+        var eventsQuery1 = await _firestore.collection('CoinTransactions')
+            .where('portfolioID',isEqualTo: portfolioID).get();
+        if(eventsQuery1.size != 0){
+          for (var queryDocumentSnapshot in eventsQuery1.docs) {
+            var docId = queryDocumentSnapshot.id;
+            _firestore.collection('CoinTransactions').doc(docId).delete();
+          }}
   }
 
   static void updatePortfolio (String portfolioID, String title) {

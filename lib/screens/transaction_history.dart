@@ -16,7 +16,7 @@ class CoinTransactions extends StatelessWidget {
     final portfolioId = data[0];
     final coinDetails = data[1];
     final holdingValue = data[2];
-
+    final profitLoss = holdingValue - (coinDetails['totalCost']??0) + (coinDetails['totalProceedings']??0);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: kBackgroundColor,
@@ -93,7 +93,7 @@ class CoinTransactions extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [Text('AVERAGE NET COST',style: kInputTitleTextStyle.copyWith(fontSize: 14)),
                             Text(
-                            NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(coinDetails['averagePrice']),
+                            NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(coinDetails['averageNetCost']??0),
                               style: const TextStyle(fontSize: 16),
                             ),],
                         ),
@@ -103,10 +103,15 @@ class CoinTransactions extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [Text('PROFIT/LOSS',style: kInputTitleTextStyle.copyWith(fontSize: 14)),
+                        profitLoss < 0 ? Text(
+                          NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(profitLoss??0),
+                          style: const TextStyle(fontSize: 16,color: Colors.red),
+                        ):
                         Text(
-                          NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(coinDetails['averagePrice']),
-                          style: const TextStyle(fontSize: 16),
-                        ),],
+                          NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(profitLoss??0),
+                          style: const TextStyle(fontSize: 16,color: Colors.green),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -133,7 +138,7 @@ class TransactionsStream extends StatelessWidget {
     return StreamBuilder<QuerySnapshot>(
       stream: _firestore.collection('CoinTransactions')
           .where('portfolioID',isEqualTo: portfolioId).where('coin',isEqualTo: coinCode)
-          // .orderBy('timeStamp',descending: true)
+          .orderBy('timeStamp',descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
@@ -165,12 +170,11 @@ class TransactionsStream extends StatelessWidget {
         }
         return Expanded(
           child: snapshot.data?.docs.length == 0?
-          Container(
-            alignment: Alignment.center,
-            child: Text('No transactions are available!',style: const TextStyle(fontSize: 25, color: kTextColor)),
+          const Padding(
+            padding: EdgeInsets.only(top: 20.0),
+            child: Text('No transactions are available!',style: TextStyle(fontSize: 18, color: kTextColor)),
           ):
           ListView(
-            // reverse: true,
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
             children: transactionsList,
           ),

@@ -93,6 +93,19 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     }
   }
 
+  List<double?> calculateBalance(){
+    double? balance;
+    double? pl;
+    if(coinDetails.isNotEmpty && price.isNotEmpty){
+      for(var coin in coinDetails.keys){
+        double holdings = ((price[coin]??0) * coinDetails[coin]['totalQuantity']);
+        balance = (balance ??0) + holdings;
+        pl = (pl??0) + holdings - coinDetails[coin]['totalCost']+coinDetails[coin]['totalProceedings'];
+      }
+    }
+    return [balance,pl];
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -103,6 +116,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   }
 
   Widget loadPortfolio(){
+    List<double?> portfolioValue = calculateBalance();
     return Padding(
       padding: const EdgeInsets.only(left: 5,right: 5),
       child: Column(
@@ -155,14 +169,15 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       }
                     ),
                   ),
-                  Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(totalBalance??0),
+                  Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[0]??0),
                     style: kCardTextStyle.copyWith(fontSize: 32,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
                   ListTile(
                     title: const Text(
                       'Total Profit/Loss',
                       style: kCardTextStyle,
                     ),
-                    trailing: Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(totalProfitLoss??0),style: kCardTextStyle),
+                    trailing: (portfolioValue[1]??0) >= 0? Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),style: kCardTextStyle.copyWith(color: Colors.green)):
+                    Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),style: kCardTextStyle.copyWith(color: Colors.red))
                   ),
                 ],
               ),
@@ -205,10 +220,11 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         rows: coinDetails.entries.map((element) => _createRows(element.value,price[element.key]?? 0)).toList()
     );
   }
+
   DataRow _createRows(Map<String,dynamic> coindetails, double coinprice ) {
     double holdings = (coinprice * coindetails['totalQuantity']);
-    totalBalance = (totalBalance??0) + holdings ;
-    print(totalBalance); //TODO: check with sri how to update
+    // totalBalance = (totalBalance??0) + holdings ;
+    // print(totalBalance); //TODO: check with sri how to update
     return
       DataRow(
           onSelectChanged: (newValue){
