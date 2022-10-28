@@ -1,4 +1,5 @@
 import 'package:crypto_portfolio_app/screens/search_coin.dart';
+import 'package:crypto_portfolio_app/screens/signin_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:crypto_portfolio_app/components/rounded_button.dart';
@@ -22,7 +23,7 @@ class _CreatePortfolioState extends State<CreatePortfolio> {
   final _text = TextEditingController();
 
   bool _validate = false;
-
+  final _auth = FirebaseAuth.instance;
   @override
   void dispose() {
     _text.dispose();
@@ -37,35 +38,48 @@ class _CreatePortfolioState extends State<CreatePortfolio> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: kBackgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            height: 200,
-            width: 200,
-            child: SvgPicture.asset("images/crypto_portfolio.svg"),),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: kBackgroundColor,
+        leading: IconButton(
+          icon: const Icon(Icons.logout_outlined, color: kPrimaryColor,size: 30,),
+          onPressed: () {
+            _auth.signOut();
+            // Navigator.pushNamed(context, SigninScreen.id);
+            Navigator.pushNamedAndRemoveUntil(context, SigninScreen.id, (route) => false);
+          },
+        ),
+      ),
+      body: Container(
+        color: kBackgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              height: 200,
+              width: 200,
+              child: SvgPicture.asset("images/crypto_portfolio.svg"),),
 
-          Padding(padding: const EdgeInsets.only(top: 50),
-            child: Container(
-                alignment: Alignment.center,
-                child: RoundedButton(title: '   Create portfolio   ', onPressed: (){
-                  showModalBottomSheet(
-                    backgroundColor: kBackgroundColor,
-                      context: context,
-                      isDismissible: false,
-                      isScrollControlled: true,
-                      builder: (context) => SafeArea(
-                        child: Container(
-                          child: newPortfolio(),
-                        ),
-                      )
-                  );
-                })),
-          ),
-        ],
+            Padding(padding: const EdgeInsets.only(top: 50),
+              child: Container(
+                  alignment: Alignment.center,
+                  child: RoundedButton(title: '   Create portfolio   ', onPressed: (){
+                    showModalBottomSheet(
+                      backgroundColor: kBackgroundColor,
+                        context: context,
+                        isDismissible: false,
+                        isScrollControlled: true,
+                        builder: (context) => SafeArea(
+                          child: Container(
+                            child: newPortfolio(),
+                          ),
+                        )
+                    );
+                  })),
+            ),
+          ],
+        ),
       ),
     );
   }
