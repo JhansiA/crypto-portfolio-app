@@ -41,6 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
       body: ModalProgressHUD(
         color: kPrimaryColor,
         inAsyncCall: showSpinner,
+        progressIndicator: CircularProgressIndicator(color: kPrimaryColor,backgroundColor: kPrimaryColor,),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: ListView(

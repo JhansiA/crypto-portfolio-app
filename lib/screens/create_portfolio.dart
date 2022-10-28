@@ -37,32 +37,36 @@ class _CreatePortfolioState extends State<CreatePortfolio> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          height: 200,
-          width: 200,
-          child: SvgPicture.asset("images/crypto_portfolio.svg"),),
+    return Container(
+      color: kBackgroundColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            height: 200,
+            width: 200,
+            child: SvgPicture.asset("images/crypto_portfolio.svg"),),
 
-        Padding(padding: const EdgeInsets.only(top: 50),
-          child: Container(
-              alignment: Alignment.center,
-              child: RoundedButton(title: '   Create portfolio   ', onPressed: (){
-                showModalBottomSheet(
-                    context: context,
-                    isDismissible: false,
-                    isScrollControlled: true,
-                    builder: (context) => SafeArea(
-                      child: Container(
-                        child: newPortfolio(),
-                      ),
-                    )
-                );
-              })),
-        ),
-      ],
+          Padding(padding: const EdgeInsets.only(top: 50),
+            child: Container(
+                alignment: Alignment.center,
+                child: RoundedButton(title: '   Create portfolio   ', onPressed: (){
+                  showModalBottomSheet(
+                    backgroundColor: kBackgroundColor,
+                      context: context,
+                      isDismissible: false,
+                      isScrollControlled: true,
+                      builder: (context) => SafeArea(
+                        child: Container(
+                          child: newPortfolio(),
+                        ),
+                      )
+                  );
+                })),
+          ),
+        ],
+      ),
     );
   }
 

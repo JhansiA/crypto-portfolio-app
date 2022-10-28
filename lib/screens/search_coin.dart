@@ -142,6 +142,7 @@ class SearchCoinState extends State<SearchCoin> {
                           {showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
+                              backgroundColor: kBackgroundColor,
                               title: Text('Remove Coin',style: kTitleTextStyle.copyWith(fontSize: 24),textAlign: TextAlign.center,),
                               content: const Text('Are you sure you want to remove this coin? Any transactions associated with this coin will also be removed',
                                 style: kCardTextStyle,),

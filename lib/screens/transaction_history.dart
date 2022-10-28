@@ -105,11 +105,11 @@ class CoinTransactions extends StatelessWidget {
                       children: [Text('PROFIT/LOSS',style: kInputTitleTextStyle.copyWith(fontSize: 14)),
                         profitLoss < 0 ? Text(
                           NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(profitLoss??0),
-                          style: const TextStyle(fontSize: 16,color: Colors.red),
+                          style: const TextStyle(fontSize: 16,color: Colors.red,fontWeight: FontWeight.bold),
                         ):
                         Text(
                           NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(profitLoss??0),
-                          style: const TextStyle(fontSize: 16,color: Colors.green),
+                          style: const TextStyle(fontSize: 16,color: Colors.green,fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -144,6 +144,7 @@ class TransactionsStream extends StatelessWidget {
         if (!snapshot.hasData) {
           return const Center(
             child: CircularProgressIndicator(
+              color: kPrimaryColor,
               backgroundColor: kPrimaryColor,
             ),
           );

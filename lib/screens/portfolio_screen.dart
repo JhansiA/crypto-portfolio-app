@@ -29,7 +29,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Map<String,double> price = {};
   double? totalBalance ;
   double? totalProfitLoss ;
-  // bool showSpinner = false;
+  bool showSpinner = false;
   final _text = TextEditingController();
   final _auth = FirebaseAuth.instance;
 
@@ -45,15 +45,15 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     super.dispose();
   }
   void getProfileDetails() async{
-    // setState(() {
-    //   showSpinner = true;
-    // });
+    setState(() {
+      showSpinner = true;
+    });
     await getPortfolio(loggedInUser.uid);
     await getCoinData(portfolioID);
     await getData(coinDetails.keys.toList());
-    // setState(() {
-    //   showSpinner = false;
-    // });
+    setState(() {
+      showSpinner = false;
+    });
   }
 
   Future<void> getPortfolio(id) async {
@@ -110,7 +110,15 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: portfolioData.isEmpty? CreatePortfolio() : loadPortfolio(),
+        body: ModalProgressHUD(
+        color: kBackgroundColor,
+        progressIndicator: CircularProgressIndicator(color: kPrimaryColor,),
+        inAsyncCall: showSpinner,
+        child:
+            showSpinner== false?
+            portfolioData.isEmpty? CreatePortfolio() : loadPortfolio():
+            Container(),
+      ),
       ),
     );
   }
@@ -295,6 +303,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                   const Icon(Icons.edit_note, color: kPrimaryColor,size: 20),
                   TextButton(onPressed: (){
                     showModalBottomSheet(
+                      backgroundColor: kBackgroundColor,
                         context: context,
                         isDismissible: false,
                         isScrollControlled: true,
@@ -317,6 +326,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
+                          backgroundColor: kBackgroundColor,
                           // title: Text('Remove Coin',style: kTitleTextStyle.copyWith(fontSize: 24),textAlign: TextAlign.center,),
                           content: Text('Are you sure you want to delete "$portfolioName" ?',
                             style: kCardTextStyle,),

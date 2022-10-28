@@ -24,8 +24,9 @@ class _SigninScreenState extends State<SigninScreen> {
     return SafeArea(
       child: Scaffold(
         body: ModalProgressHUD(
-          color: kPrimaryColor,
+          color: kBackgroundColor,
           inAsyncCall: showSpinner,
+          progressIndicator: CircularProgressIndicator(color: kPrimaryColor,backgroundColor: kPrimaryColor,),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: SingleChildScrollView(
