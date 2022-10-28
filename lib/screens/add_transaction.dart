@@ -235,7 +235,6 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
                   }),
                 RoundedButton( title: 'Submit',
                     onPressed: () {
-                      //TODO: logic to save
                       double coinPrice = (finalValue.text.isNotEmpty && finalValue.text !='.') ? double.parse(finalValue.text): 0;
                       String? type = coinType();
 
@@ -273,7 +272,7 @@ class _AddTransactionState extends State<AddTransaction> with SingleTickerProvid
     textValue = totalEditingController.text;
     textQuantity = quantityEditingController.text;
 
-    if ((textValue != '' && textQuantity != '') && (textQuantity != '0' && textQuantity != '.') && (textValue != '0' && textValue != '.') ){
+    if ((textValue != '' && textQuantity != '') && (textQuantity != '0' && textQuantity != '.' && textQuantity != '0.') && (textValue != '0' && textValue != '.' && textValue != '0.') ){
       finalPrice = (double.parse(textValue) / double.parse(textQuantity)).toStringAsFixed(3);
       finalValue.value = finalValue.value.copyWith(
         text: finalPrice.toString(),

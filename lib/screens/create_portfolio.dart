@@ -99,7 +99,7 @@ class _CreatePortfolioState extends State<CreatePortfolio> {
                     _validate = _text.text.isEmpty;
                   }
                 });
-                //TODO: check logic if already name exists in DB for this user
+                //TODO: check logic if already name exists in DB for this user if multiprofile option available
                 Database.createPortfolio(loggedInUser.uid, portfolioName);
                 portfoliodata = await Database.getPortfolioInfo(loggedInUser.uid);
                 Navigator.pushNamed(context, SearchCoin.id, arguments: portfoliodata);

@@ -257,8 +257,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
   DataRow _createRows(Map<String,dynamic> coindetails, double coinprice ) {
     double holdings = (coinprice * coindetails['totalQuantity']);
-    // totalBalance = (totalBalance??0) + holdings ;
-    // print(totalBalance); //TODO: check with sri how to update
     return
       DataRow(
           onSelectChanged: (newValue){
