@@ -118,7 +118,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
             showSpinner== false?
             portfolioData.isEmpty? CreatePortfolio() : loadPortfolio():
             Container(),
-      ),
+        ),
       ),
     );
   }
@@ -153,45 +153,67 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(left: 10,right: 10),
-            child: Card(
-              color: kPrimaryColor,
-              shape: RoundedRectangleBorder(
+            child: Container(
+              height: 150,
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
+                  boxShadow: [BoxShadow(
+                        color: Colors.grey.withOpacity(0.3),
+                        // offset: Offset(-5.0,5.0),
+                        blurRadius: 20.0,
+                        spreadRadius: 4.0,
+                      )],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ListTile(
-                    title: const Text(
-                      'Your balance (USD)',
-                      style: kCardTextStyle,
+              child: Stack(children: [
+                Positioned(
+                  child: Card(
+                    elevation: 10.0,
+                    color: Colors.grey.withOpacity(0.5),
+                    shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                   ),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        // borderRadius: BorderRadius.circular(15),
+                        image: DecorationImage(
+                          fit: BoxFit.fill,
+                          image: AssetImage("images/Balance card.png"),
+                        ),
                     ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.more_vert, color: kTextColor,size: 25,),
-                      onPressed: () {
-                        showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return _showDialog();
-                        });
-                      }
                     ),
-                  ),
-                  Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[0]??0),
-                    style: kCardTextStyle.copyWith(fontSize: 32,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
-                  ListTile(
-                    title: const Text(
-                      'Total Profit/Loss',
-                      style: kCardTextStyle,
+                      ),
+                ),
+                Positioned(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ListTile(
+                      title: const Text('Your balance (USD)',style: kCardTextStyle,),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.more_vert, color: kTextColor,size: 25,),
+                          onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                            return _showDialog();
+                            });
+                          }
+                      ),
                     ),
-                    trailing: (portfolioValue[1]??0) >= 0? Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),
-                        style: TextStyle(color: Colors.green, fontSize: 20,fontWeight: FontWeight.bold,
-                    )):
-                    Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),
-                      style: TextStyle(color: Colors.red, fontSize: 20,fontWeight: FontWeight.bold,)
+                    Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[0]??0),
+                      style: kCardTextStyle.copyWith(fontSize: 32,fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+                    ListTile(
+                      title: const Text('Total Profit/Loss',style: kCardTextStyle,),
+                      trailing: (portfolioValue[1]??0) >= 0? Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),
+                       style: const TextStyle(color: Colors.green, fontSize: 20,fontWeight: FontWeight.bold,
+                        )):
+                      Text(NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(portfolioValue[1]??0),
+                       style: const TextStyle(color: Colors.red, fontSize: 20,fontWeight: FontWeight.bold,)
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                 ),
+                ),
+              ],
               ),
             ),
           ),

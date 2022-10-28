@@ -43,28 +43,52 @@ class CoinTransactions extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-              color: kPrimaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Row(
+          Container(
+            height: 150,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [BoxShadow(
+              color: Colors.grey.withOpacity(0.3),
+              // offset: Offset(-3.0,3.0),
+              blurRadius: 20.0,
+              spreadRadius: 4.0,
+              )],
+            ),
+            child: Stack(children: [
+              Positioned(
+                child:Card(
+                  color: kPrimaryColor,
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: AssetImage("images/Balance card.png"),
+                      ),
+                    ),
+                  ),
+                ),
+            ),
+              Positioned(
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Row(
                       // mainAxisAlignment: MainAxisAlignment.center,
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
-                       children: [Text('HOLDINGS VALUE',style: kInputTitleTextStyle.copyWith(fontSize: 14)),
-                         Text(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [Text('HOLDINGS VALUE',style: kInputTitleTextStyle.copyWith(fontSize: 14)),
+                          Text(
                            NumberFormat.simpleCurrency(locale: 'en-US',decimalDigits: 2).format(holdingValue),
                            style: const TextStyle(fontSize: 16),
-                         ),],
-                     ),
+                          ),],
+                        ),
                        const SizedBox(width: 100,),
                        Column(
                          crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,6 +141,8 @@ class CoinTransactions extends StatelessWidget {
                 ),
               ),
             ),
+      ]),
+          ),
             const SizedBox(height: 20,),
             const Text(
               'Transaction History',
