@@ -202,7 +202,7 @@ class TransactionsStream extends StatelessWidget {
             child: Text('No transactions are available!',style: TextStyle(fontSize: 18, color: kTextColor)),
           ):
           ListView(
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            padding: const EdgeInsets.only(top: 15.0,right: 5.0),
             children: transactionsList,
           ),
         );
@@ -225,16 +225,26 @@ class TransactionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListTile(
-            leading: type.toLowerCase() == 'sell'?
-            const Icon(Icons.arrow_back,color: Colors.red,):
-            const Icon(Icons.arrow_forward,color: Colors.green,),
-          title: Text(type,style: const TextStyle(fontSize: 16.0,color: Colors.white,),
-            textAlign: TextAlign.start,
-          ),
-          subtitle: Text(DateFormat.yMMMd().format(DateTime.parse(date)),style: const TextStyle(fontSize: 16.0,color: Colors.white,),
-          ),
-          trailing: Column(
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(children:[
+                type.toLowerCase() == 'sell'?
+                const Icon(Icons.arrow_back,color: Colors.red,):
+                const Icon(Icons.arrow_forward,color: Colors.green,),
+                const SizedBox(width: 10,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(type,style: const TextStyle(fontSize: 16.0,color: Colors.white,),
+                      ),
+                    Text(DateFormat.yMMMd().format(DateTime.parse(date)),style: const TextStyle(fontSize: 16.0,color: Colors.white,),),
+                  ],
+                ),
+              ],
+              ),
+           Column(
+             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text('$quantity $coin',
                 style: const TextStyle(fontSize: 16.0,color: Colors.white,),
@@ -245,8 +255,8 @@ class TransactionRow extends StatelessWidget {
               ),
             ],
           )
-        ),
-        const Divider(color: kTextColor2,thickness: 1,),
+        ]),
+        const Divider(color: kTextColor2,thickness: 0.3,),
       ],
     );
   }
